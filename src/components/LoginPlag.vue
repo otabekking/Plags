@@ -1,9 +1,8 @@
 <template>
-  <div class="container">
-    <div class="header"></div>
-
+  <div class="logins">
+    <nav class="header"></nav>
     <div class="login">
-      <form>
+      <form @submit.prevent>
         <h1 class="plag_title">PlagSyS kirish</h1>
         <div class="form">
           <div style="display: flex" class="login-form__wrapper">
@@ -27,7 +26,8 @@
               placeholder="Parol"
             />
           </div>
-          <button class="plag_login">Kirish</button>
+          <!-- <button @click="goToBlack" class="plag_login">Kirish</button> -->
+          <button @click="signUp">Kirish</button>
         </div>
       </form>
     </div>
@@ -35,9 +35,38 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "LoginPlag",
-  components: {},
+  data() {
+    return {
+      name: "",
+      password: "",
+    };
+  },
+  mounted() {},
+  methods: {
+    goToBlack() {},
+    async signUp() {
+      try {
+        const {
+          data: { access_token, refresh_token, user },
+        } = await axios.post("https://plag.m1.uz/login/", {
+          username: this.name,
+          password: this.password,
+        });
+        console.log("helloo ");
+
+        localStorage.setItem("accessToken", access_token);
+        localStorage.setItem("refreshToken", refresh_token);
+        localStorage.setItem("user", JSON.stringify(user));
+        console.log(access_token);
+        this.$router.push({ name: "BlackPlag" });
+      } catch (error) {
+        console.log("xato", error);
+      }
+    },
+  },
 };
 </script>
 
@@ -60,7 +89,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  transform: translateY(60%);
 }
 .form {
   display: flex;
@@ -71,6 +100,7 @@ input {
   border: 1px solid rgba(143, 144, 166, 0.25);
   border-radius: 8px;
   margin-bottom: 20px;
+  outline: none;
 
   background: #f9fafb;
 }
@@ -146,5 +176,13 @@ button {
   font-weight: bold;
   font-size: 16px;
   line-height: 22px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  &:hover {
+    background: #bfaaec;
+    transition: 0.3s ease all;
+    border: none;
+  }
 }
 </style>

@@ -1,24 +1,17 @@
 <template>
-  <div>
-    <Login />
-    <Black />
-    <Cloud />
-    <Main />
+  <div id="app">
+    <Login v-if="$route.path == '/'" />
+
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Login from "./components/LoginPlag.vue";
-import Black from "./components/BlackPlag.vue";
-import Cloud from "./components/CloudPlag.vue";
-import Main from "./components/MainPlag.vue";
 export default {
   name: "app",
   components: {
-    Black,
     Login,
-    Cloud,
-    Main,
   },
 };
 </script>
