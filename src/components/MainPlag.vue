@@ -15,12 +15,10 @@
                 <div class="logo">
                   <img class="logo-img" :src="require('@/assets/doc.svg')" />
                 </div>
-
-                <div v-if="dokment !== ''" class="doc">
+                <div v-if="dokment" class="doc">
                   <p class="doc_text">
                     {{ dokment.file_name }}
-                    Sarvardiplomishi.doc
-                    <span class="logo-text">14:03 10.03.2022 </span>
+                    <span class="logo-text">{{ created_at() }}</span>
                   </p>
                 </div>
               </div>
@@ -29,7 +27,12 @@
                 <div class="present"><p class="present_text">53%</p></div>
                 <div class="pass">
                   <div class="pass_inner">
-                    <img class="show-img" :src="require('@/assets/Show.png')" />
+                    <button class="show_btn">
+                      <img
+                        class="show-img"
+                        :src="require('@/assets/Show.png')"
+                      />
+                    </button>
                   </div>
                 </div>
                 <div class="download-img">
@@ -57,22 +60,28 @@
               <div class="selection_form">
                 <h3 class="selection-text">Abulayev Abdulla</h3>
                 <div class="slectet_wrapper">
-                  <select class="selectioner" v-model="selected">
+                  <select class="selectioner" @click="select">
+                    <option value="" disabled selected hidden>
+                      O'qtuvchni tanlang
+                    </option>
                     <option
                       v-for="option in options"
-                      v-bind:value="option.value"
-                      :key="option"
+                      :value="option.name"
+                      :key="option.id"
                     >
-                      {{ option }}
+                      {{ option.name }}
                     </option>
                   </select>
                 </div>
 
                 <div class="slectet_wrapper">
-                  <select class="selectioner_2" v-model="selected">
+                  <select class="selectioner_2" @click="subjectSelection">
+                    <option value="" disabled selected hidden>
+                      Fanni tanlang
+                    </option>
                     <option
                       v-for="subject in subjects"
-                      v-bind:value="subject.value"
+                      :value="subject.value"
                       :key="subject"
                     >
                       {{ subject }}
@@ -80,10 +89,7 @@
                   </select>
                 </div>
                 <div class="btn">
-                  <button
-                    @click="() => $router.push('success-plag')"
-                    class="selection_btn"
-                  >
+                  <button @click="sendSucessData" class="selection_btn">
                     Jo‘natish
                   </button>
                 </div>
@@ -95,9 +101,9 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
+import { mapActions } from "vuex";
 export default {
   name: "MainPlag",
   components: {},
@@ -105,39 +111,71 @@ export default {
     return {
       items: ["Talaba:", "O‘qituvchi:", "Fan:"],
       options: [
-        "O‘qituvchini tanlang",
-        "Abdulazizov Otabek",
-        "Abdullayev Abdulla",
+        { id: 1, name: "Anvarov Anvar" },
+        { id: 2, name: "Abdulazizov Otabek" },
+        { id: 3, name: "Abdullayev Abdulla" },
       ],
       subjects: ["Kriptografiya 1", "Dasturlash 2", "Tizim xavfsizlgi 3"],
       dokment: "",
-      file_name: "",
+      params: this.$route.params.id,
+      response: "",
+      selected: "",
     };
   },
+  created() {
+    this.getText();
+  },
+
   methods: {
-    goToBlack() {
-      this.$router.push({ name: "SuccessPlag" });
+    ...mapActions(["teacherLine"]),
+    select(event) {
+      console.log(event.target.value);
+      this.selecteder = event.target.value;
+    },
+    subjectSelection(event) {
+      console.log(event.target.value);
+      this.selected = event.target.value;
+    },
+    created_at() {
+      const current = new Date();
+      const date = `${current.getDate()}.${
+        current.getMonth() + 1
+      }.${current.getFullYear()}`;
+      return date;
     },
 
-    getDeletc() {
-      axios;
-      console
-        .log(this.$route.params.id)
-        .get(`https://plag.m1.uz/detect/${this.$route.params.id}`, {
+    getText() {
+      axios
+        .get(`https://plag.m1.uz/detect/${this.params}`, {
           headers: {
             Authorization: "Bearer" + ` ${localStorage.getItem("accessToken")}`,
           },
         })
         .then((res) => {
-          console.log("datalar", res.data);
           this.dokment = res.data;
-          console.log(this.dokment, "heloo");
-
-          //  console.log(data);
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    sendSucessData() {
+      const data = {
+        id: this.$route.params.id,
+        selected: this.selected,
+        selecteder: this.selecteder,
+        token: localStorage.getItem("access_token"),
+      };
+      console.log("salom");
+      this.$store.dispatch("sendData", data).then(() => {
+        this.$router.push({ name: "SuccessPlag" });
+        this.teacherLine(this.selecteder);
+      });
+    },
+  },
+  watch: {
+    selecteder: function (newAge) {
+      console.log(newAge);
     },
   },
 };
@@ -287,6 +325,7 @@ export default {
         font-size: 15px;
         line-height: 22px;
         border: none;
+        cursor: pointer;
 
         &:hover {
           background: #bfaaec;
@@ -367,6 +406,10 @@ export default {
       left: 85px;
       z-index: 2;
     }
+  }
+  .show_btn {
+    cursor: pointer;
+    border: none;
   }
 }
 </style>

@@ -19,25 +19,15 @@
     </header>
     <div class="progress_main">
       <div class="progress_inner">
-        <div class="circular-progress"></div>
-        <div class="circle-wrap">
-          <div class="circle">
-            <div class="mask half">
-              <div class="fill"></div>
-            </div>
-            <div class="mask full">
-              <div class="fill"></div>
-            </div>
-            <div class="inside-circle">{{ Math.floor(fill) }} %</div>
-          </div>
-        </div>
-        <div class="cancel">
-          <button @click="() => $router.push('again-plag')" class="cancel_img">
-            <img class="cancel_imger" :src="require('@/assets/Cancel.svg')" />
-          </button>
-        </div>
-        <div class="pdf">
-          <p class="pdf_text">Sarvardiplomishi.pdf</p>
+        {{ percentage }}
+        <custom-progressbar v-bind="{ percentage }" />
+
+        
+
+       x`1`
+
+        <div v-if="fileText" class="pdf">
+          <p class="pdf_text">{{ fileText.file_name }}  </p>
         </div>
       </div>
     </div>
@@ -45,29 +35,51 @@
 </template>
 
 <script>
+import axios from "axios";
+import CustomProgressbar from "@/components/CustomProgressbar.vue";
+
 export default {
   name: "ProgressPlag",
+  components: { CustomProgressbar },
   data() {
     return {
       fill: 0,
+      fileText: "",
     };
   },
+
+  methods: {
+    getText() {
+      axios
+        .get(`https://plag.m1.uz/detect/`, {
+          headers: {
+            Authorization: "Bearer" + ` ${localStorage.getItem("accessToken")}`,
+          },
+        })
+        .then((res) => {
+          this.fileText = res.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
   created() {
+    this.getText();
     var intval = setInterval(() => {
       if (this.fill < 100) {
         this.fill += 0.1;
       } else {
         clearInterval(intval);
-        this.$router.push("achievement-circle");
+        this.$router.push("");
       }
-    }, 10);
+    }, 2);
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .progress {
-  height: 100vh;
   header {
     background: #6941c6;
     height: 95px;
@@ -174,8 +186,8 @@ export default {
 
   .mask.full,
   .circle .fill {
-    animation: fill ease-in-out 11s;
-    transform: rotate(180deg);
+    animation: fill ease-in-out 2s;
+    // transform: rotate(180deg);
   }
 
   @keyframes fill {
@@ -183,7 +195,7 @@ export default {
       transform: rotate(0deg);
     }
     100% {
-      transform: rotate(180deg);
+      transform: rotate(360deg);
     }
   }
   .circle-wrap .inside-circle {
@@ -209,8 +221,8 @@ export default {
       height: 44px;
       border-radius: 50%;
       border: none;
-      right: 126px;
-      top: -20px;
+      right: -44px;
+      top: -4px;
       padding: 4px 0 0 0;
 
       cursor: pointer;
@@ -224,8 +236,8 @@ export default {
     position: relative;
     .pdf_text {
       position: absolute;
-      right: 228px;
-      top: 104px;
+      right: 108px;
+      top: 107px;
     }
   }
 }

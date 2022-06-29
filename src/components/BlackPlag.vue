@@ -6,7 +6,9 @@
         <h1 class="black_title">Antiplagiat tizimi</h1>
         <div class="qoralama">
           <div class="black_btn">
-            <button @click="() => $router.push('black-file')">Qoralama</button>
+            <button @click="() => $router.push({ path: '/draft' })">
+              Qoralama
+            </button>
           </div>
           <div class="black_btn">
             <button @click="() => $router.push('cloud-plag')">Asosiy</button>
@@ -86,9 +88,9 @@ export default {
       line-height: 22px;
       cursor: pointer;
 
-      &:hover{
-        background: #D9C7FF;
-         transition: 0.3s ease all;
+      &:hover {
+        background: #d9c7ff;
+        transition: 0.3s ease all;
       }
     }
   }

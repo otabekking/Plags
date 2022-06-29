@@ -40,13 +40,11 @@ export default {
   name: "LoginPlag",
   data() {
     return {
-      name: "",
+      name: "", 
       password: "",
     };
   },
-  mounted() {},
   methods: {
-    goToBlack() {},
     async signUp() {
       try {
         const {
@@ -55,15 +53,14 @@ export default {
           username: this.name,
           password: this.password,
         });
-        console.log("helloo ");
 
         localStorage.setItem("accessToken", access_token);
         localStorage.setItem("refreshToken", refresh_token);
         localStorage.setItem("user", JSON.stringify(user));
         console.log(access_token);
-        this.$router.push({ name: "BlackPlag" });
+        this.$router.push("black-plag");
       } catch (error) {
-        console.log("xato", error);
+        console.log("erorr", error);
       }
     },
   },
@@ -71,8 +68,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
-
 .header {
   height: 8px;
   background: #6941c6;

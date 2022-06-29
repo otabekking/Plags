@@ -11,16 +11,16 @@
             24 soat ichida 3 marta fayl yuklash mumkin!
           </p>
           <div class="sricle">
-            <span class="span">0</span> <span class="span">/</span
+            <span class="span">0{{ counter }}</span> <span class="span">/</span
             ><span class="span_num">3</span>
           </div>
         </div>
       </div>
     </header>
-    <div class="danger_inner">
-      <div v-if="changeFile" class="danger_sad">
-        <img class="danger_imgs-sad" :src="require('@/assets/Sad.svg')" />
 
+    <div v-if="step === 1">
+      <div v-if="!fileUploded" class="danger_sad">
+        <img class="danger_imgs-sad" :src="require('@/assets/Sad.svg')" />
         <h3 class="danger_sad-text">Hali fayl yuklangani yo’q...</h3>
       </div>
       <div v-else class="file">
@@ -66,7 +66,7 @@
                 type="file"
                 class="input_upload"
                 style="cursor: poninter;"
-                @change="progressFile"
+                @change="uploadFile"
               />
               <button @click="onClick" class="danger_btn">Browse files</button>
             </div>
@@ -74,27 +74,46 @@
         </div>
       </div>
     </div>
+    <div v-else-if="step === 2">
+      <custom-progressbar v-if="percentage < 100" :percentage="percentage" />
+      <div v-else-if="percentage === 100 && isSuccessfully"></div>
+      <div v-else-if="percentage === 100 && !isSuccessfully"></div>
+    </div>
+    <div v-else-if="step === 3"></div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CustomProgressbar from "@/components/CustomProgressbar.vue";
+
 export default {
-  name: "BlackFile",
+  name: "BaseDraft",
+  components: { CustomProgressbar },
   data() {
     return {
-      file: "",
-      changeFile: true,
-      dataFile: null,
+      step: 1,
       percentage: 0,
+      fileUploded: false,
     };
   },
+  computed: {
+    counter() {
+      return this.$store.state.counter;
+    },
+  },
   methods: {
-    progressFile(event) {
+    onClick() {
+      this.$refs.fileInput.click();
+    },
+    uploadFile(event) {
+      this.step = 2;
       const vm = this;
       const formData = new FormData();
       formData.append("draft", false);
       formData.append("file", event.target.files[0]);
+      console.log(event);
+
       axios
         .post("https://plag.m1.uz/detect/", formData, {
           headers: {
@@ -110,33 +129,28 @@ export default {
         })
         .then((res) => {
           console.log("salom aka", res.data.id);
-          this.$router.push("progress-plag");
-          this.changeFile = !this.changeFile;
-          console.log("aa", this.changeFile);
+          this.$router.push("achievement-circle");
+          this.isSuccessfully = true;
+          this.fileUploded = true;
         })
         .catch((error) => {
+          this.fileUploded = false;
           console.error(error);
         });
-      axios
-        .get("https://plag.m1.uz/detect/", {
-          headers: {
-            Authorization: "Bearer" + ` ${localStorage.getItem("accessToken")}`,
-          },
-        })
-        .then((response) => {
-          this.dataFile = response.data;
-          // this.$router.push("progress-plag");
-          console.log("salom111", this.dataFile);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    onClick() {
-      this.$refs.fileInput.click();
-    },
-    increaseP() {
-      this.percentage += 10;
+      // axios
+      //   .get("https://plag.m1.uz/detect/", {
+      //     headers: {
+      //       Authorization: "Bearer" + ` ${localStorage.getItem("accessToken")}`,
+      //     },
+      //   })
+      //   .then((response) => {
+      //     this.dataFile = response.data;
+      //     this.$router.push("progress-plag");
+      //     console.log("salom111", this.dataFile);
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
     },
   },
 };
@@ -224,6 +238,8 @@ export default {
     justify-content: center;
     align-items: center;
     padding: 2px;
+    margin: 0 auto;
+    margin-bottom: 80px;
 
     .cloud_inner {
       width: 750px;
@@ -272,15 +288,23 @@ export default {
   .danger_img {
     opacity: 0.1;
   }
+
+  .danger_sad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 103px;
+  }
+
   .danger_sad-text {
     font-family: "Inter";
     font-size: 20px;
     font-weight: 500;
     line-height: 24px;
   }
-  .danger_imgs-sad {
-    margin-left: 75px;
-  }
+
   .input_file {
     position: relative;
     input {

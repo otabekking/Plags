@@ -20,20 +20,44 @@
               Talaba: <span class="success_student">Sarvar Erkinjonov</span>
             </p>
             <p class="success_texter">
-              O'qtuvchi: <span class="success_teacher">Abdulazizov Otabek</span>
+              O'qtuvchi:
+              <span class="success_item_name">
+                {{ teacherName }}
+              </span>
             </p>
           </div>
 
-          <button  @click="() => $router.push('upload-plag')" class="success_btn">Bosh menyuga qaytish</button>
+          <button @click="() => $router.push('black-plag')" class="success_btn">
+            Bosh menyuga qaytish
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "SuccessPlag",
   components: {},
+  data() {
+    return {};
+  },
+
+  created() {
+    this.teacherName;
+    console.log("teacherName", this.teacherName);
+  },
+
+  computed: {
+    ...mapGetters(["teacherName"]),
+  },
+
+  methods: {
+    teacherList() {
+      return this.teacherName;
+    },
+  },
 };
 </script>
 
@@ -135,6 +159,9 @@ export default {
   .success_imgs {
     width: 100px;
     height: 100px;
+  }
+  .success_item_name {
+    margin-left: 17px;
   }
 }
 </style>

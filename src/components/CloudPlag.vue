@@ -13,12 +13,13 @@
           <h3 class="cloud_text">OR</h3>
           <div class="input_file">
             <input
+              ref="fileInput"
               type="file"
               class="input_upload"
-              style="cursor: poninter"
+              style="cursor: poninter;"
               @change="Fileroute"
             />
-            <button @click="() => $router.push('')" class="cloud_btn">
+            <button @click="onClick" class="cloud_btn">
               Browse files
             </button>
           </div>
@@ -36,13 +37,13 @@ export default {
   data() {
     return {
       fayl: "",
-      draf: "",
+      draft: "",
     };
   },
   methods: {
     Fileroute(e) {
       const formData = new FormData();
-      formData.append("draf", false);
+      formData.append("draft", false);
       formData.append("file", e.target.files[0]);
       axios
         .post("https://plag.m1.uz/detect/", formData, {
@@ -51,7 +52,7 @@ export default {
           },
         })
         .then((res) => {
-          console.log("res", res.data.id);
+          console.log("sol", res.data.id);
           this.$router.push(`/main-plag/${res.data.id}`);
         })
         .catch((error) => {
@@ -62,6 +63,9 @@ export default {
           Authorization: "Bearer" + ` ${localStorage.getItem("accessToken")}`,
         },
       });
+    },
+      onClick() {
+      this.$refs.fileInput.click();
     },
   },
 };

@@ -39,7 +39,7 @@ export default {
 
   created() {
     setTimeout(() => {
-      this.$router.push("upload-plag");
+      this.$router.push("draft");
     }, 3000);
   },
 };

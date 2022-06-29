@@ -14,7 +14,6 @@ import UploadPlag from "@/components/UploadPlag.vue"
 import CloudPlag from "@/components/CloudPlag.vue"
 
 const routes = [
-
   {
     path: '/black-plag',
     name: 'BlackPlag',
@@ -59,9 +58,12 @@ const routes = [
     path: '/cloud-plag',
     name: 'CloudPlag',
     component: CloudPlag
+  },
+  {
+    path: '/draft',
+    name: 'draft',
+    component: () => import('@/pages/draft.vue'),
   }
-
-
 ]
 
 const router = createRouter({
